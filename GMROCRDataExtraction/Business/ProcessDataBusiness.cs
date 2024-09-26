@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using GMROCRDataExtraction.Business;
+using Google.Apis.Bigquery.v2.Data;
 
 namespace GMROCRDataExtraction.Business
 {
@@ -19,6 +20,7 @@ namespace GMROCRDataExtraction.Business
 
         private readonly ILogger _logger;
         private readonly HttpClient _client = new HttpClient();
+        private readonly Credentials _credentials = new Credentials();
 
         public ProcessDataBusiness(ILogger logger)
         {
@@ -29,17 +31,22 @@ namespace GMROCRDataExtraction.Business
         {
             try
             {
+                GoogleCredential credential = GoogleCredential.FromFile(_credentials.bigqueryAccessPath);
+
+                var client = BigQueryClient.Create(_credentials.projectId, credential);
+
                 foreach (var data in rows)
                 {
                     if (data.TryGetValue("details", out object valor))
                     {
-                        _logger.LogInformation("Starting process data...");
+                        _logger.LogInformation("Processing file...");
 
                         JObject[] obj = JsonConvert.DeserializeObject<JObject[]>((string)valor);
 
                         JObject firstData = obj[0];
                         JObject secondData = obj[1];
 
+                        string fileName = (string)data["file_name"];
                         string isAMCNPortal = "T";
                         string mailAddressStreet = (string)firstData["value"]["17"];
                         string city = (string)firstData["value"]["14"];
@@ -163,7 +170,24 @@ namespace GMROCRDataExtraction.Business
                         }
                         else
                         {
+
                             _logger.LogError(responseString);
+
+                            var rowsToInsert = new List<BigQueryInsertRow>
+                            {
+                                new BigQueryInsertRow
+                                {
+                                    { "file_name", fileName },
+                                    { "log_message", responseString },
+                                    { "created_on", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") },
+                                    { "payload", (string)valor },
+                                    // Añade más columnas y valores según sea necesario
+                                }
+                            };
+
+                            await client.InsertRowsAsync("dataset_qh_entity_extraction", "gmr_hitl_processor_log", rowsToInsert);
+                            _logger.LogInformation("Registros insertados correctamente.");
+
                         }
                     }
                 }

@@ -19,7 +19,7 @@ namespace GMROCRDataExtraction.Business
     {
 
         private readonly ILogger _logger;
-        Credentials _credentials = new Credentials();
+        private readonly Credentials _credentials = new Credentials();
         public BigqueryExtractionBusiness(ILogger logger)
         {
             _logger = logger;
