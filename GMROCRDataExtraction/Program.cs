@@ -9,12 +9,14 @@ using var loggerFactory = LoggerFactory.Create(builder =>
 
 ILogger _logger = loggerFactory.CreateLogger<Program>();
 
-
 AcessTokenBusiness _bearerAccessToken = new AcessTokenBusiness(_logger);
+
 BigqueryExtractionBusiness _bigqueryExtractionBusiness = new BigqueryExtractionBusiness(_logger);
+
 ProcessDataBusiness _processDataBusiness = new ProcessDataBusiness(_logger);
 
 var rows = new List<Dictionary<string, object>>();
+
 string bearerToken = await _bearerAccessToken.getBearerAccessToken();
 
 rows = _bigqueryExtractionBusiness.getBigqueryData();
