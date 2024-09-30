@@ -37,7 +37,7 @@ namespace GMROCRDataExtraction.Business
 
                 var client = BigQueryClient.Create(_credentials.projectId, credential);
 
-                string query = "SELECT * FROM `depart-team-1-prod-svc-a19m.dataset_qh_entity_extraction.gmr_hitl`";
+                string query = $"SELECT * FROM `{_credentials.projectId}.{_credentials.dataSet}.{_credentials.dataTable}`";
 
                 var result = client.ExecuteQuery(query, parameters: null);
 

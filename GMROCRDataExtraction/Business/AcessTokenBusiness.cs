@@ -38,7 +38,8 @@ namespace GMROCRDataExtraction.Business
 
                 var contentToken = new StringContent(jsonResponseToken, Encoding.UTF8, "application/json");
 
-                var responseToken = await _client.PostAsync("https://localhost:44302/api/v5/Vendors/GetAccessToken", contentToken);
+                var responseToken = await _client.PostAsync($"{_credentials.localHost}v5/Vendors/GetAccessToken", contentToken);
+                //var responseToken = await _client.PostAsync($"{_credentials.qaEnvironment}v5/Vendors/GetAccessToken", contentToken);
 
                 var responseStringToken = await responseToken.Content.ReadAsStringAsync();
 

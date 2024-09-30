@@ -159,7 +159,8 @@ namespace GMROCRDataExtraction.Business
                         //Console.WriteLine(jsonString);
 
 
-                        var response = await _client.PostAsync("https://localhost:44302/api/V6/Members/SignUpMemberBasic", content);
+                        var response = await _client.PostAsync($"{_credentials.localHost}V6/Members/SignUpMemberBasic", content);
+                        //var response = await _client.PostAsync($"{_credentials.qaEnvironment}V6/Members/SignUpMemberBasic", content);
 
                         var responseString = await response.Content.ReadAsStringAsync();
 
@@ -181,7 +182,7 @@ namespace GMROCRDataExtraction.Business
                                     { "log_message", responseString },
                                     { "created_on", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") },
                                     { "payload", (string)valor },
-                                    // Añade más columnas y valores según sea necesario
+                                    
                                 }
                             };
 
